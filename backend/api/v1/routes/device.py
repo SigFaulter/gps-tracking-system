@@ -1,6 +1,5 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi_pagination import paginate, LimitOffsetPage
 
 from core.dependencies import (
     admin_only,
@@ -46,7 +45,7 @@ def read_device(
     return device
 
 
-@router.get("", response_model=List[DeviceRead])
+@router.get("", response_model=LimitOffsetPage[DeviceRead])
 def read_devices(
     token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
 ):
@@ -62,7 +61,7 @@ def read_devices(
             status_code=status.HTTP_404_NOT_FOUND, detail="No devices found"
         )
 
-    return devices
+    return paginate(devices)
 
 
 @router.post(

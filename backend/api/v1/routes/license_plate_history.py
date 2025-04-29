@@ -1,6 +1,5 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi_pagination import paginate, LimitOffsetPage
 
 from core.dependencies import (
     admin_only,
@@ -59,7 +58,7 @@ def read_license_plate_histories_by_history_id(
 
 @router.get(
     "",
-    response_model=List[LicensePlateHistoryRead],
+    response_model=LimitOffsetPage[LicensePlateHistoryRead],
     dependencies=[Depends(verify_license_plate_history_access)],
 )
 def read_license_plate_histories(
@@ -80,7 +79,7 @@ def read_license_plate_histories(
             detail="No license plate history found",
         )
 
-    return license_plate_history
+    return paginate(license_plate_history)
 
 
 @router.post(

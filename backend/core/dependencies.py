@@ -38,23 +38,24 @@ def verify_access(
     token = decode_jwt_token(token)
     if user_id != token["id"]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    
+
+
 def verify_self_delete_admin(
     user_id: int = Path(...),
     token: str = Depends(oauth2_scheme),
 ) -> None:
     token_data = decode_jwt_token(token)
-    
+
     if user_id == token_data["id"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="SuperAdmin can't delete themselves"
+            detail="SuperAdmin can't delete themselves",
         )
-    
+
     if token_data["id"] != 1:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only Super Admin can delete admins"
+            detail="Only Super Admin can delete admins",
         )
 
 

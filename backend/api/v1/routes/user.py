@@ -14,6 +14,7 @@ from crud.user import (
 )
 from db.database import Session, get_session
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi_pagination import paginate, LimitOffsetPage
 from schemas.user import UserCreate, UserModify, UserRead
 
 router = APIRouter(
@@ -41,9 +42,12 @@ def read_user(
     return user
 
 
-@router.get("", response_model=list[UserRead], dependencies=[Depends(admin_only)])
+@router.get(
+    "", response_model=LimitOffsetPage[UserRead], dependencies=[Depends(admin_only)]
+)
 def read_users(session: Session = Depends(get_session)):
-    return get_users(session)
+    users = get_users(session)
+    return paginate(users)
 
 
 @router.post(
